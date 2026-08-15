@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pagamento — Smart Hotel</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /*
+         * Aparência do botão enquanto o pagamento
+         * está sendo criado.
+         */
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        #mensagem {
+            margin-top: 20px;
+        }
+
+        /*
+         * Reserva um espaço mínimo para o componente
+         * do Mercado Pago aparecer.
+         */
+        #walletBrick_container {
+            margin-top: 25px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Pagamento da reserva</h1>
+
+<label for="reservaId">
+    ID da reserva:
+</label>
+
+<input
+        id="reservaId"
+        type="number"
+        min="1"
+        value="1"
+>
+
+<button
+        id="botaoCriarPagamento"
+        type="button"
+        onclick="criarPagamento()"
+>
+    Criar pagamento
+</button>
+
+<p id="mensagem"></p>
+
+<!--
+    O botão oficial do Mercado Pago
+    será inserido dentro desta div.
+-->
+<div id="walletBrick_container"></div>
+
+<!--
+    SDK oficial MercadoPago.js.
+-->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<script>
+    /*
+     * Guarda o Wallet Brick criado.
+     *
+     * Assim conseguimos desmontar o componente
+     * antes de gerar um novo pagamento.
+     */
+    let walletBrickController = null;
+
+    /*
+     * Remove com segurança qualquer botão
+     * do Mercado Pago criado anteriormente.
+     */
+    async function removerBrickAnterior() {
+
+        /*
+         * Verifica se já existe um componente criado.
+         */
+        if (walletBrickController) {
+
+            try {
+                /*
+                 * Remove oficialmente o componente
+                 * da página.
+                 */
+                await walletBrickController.unmount();
+
+            } catch (erro) {
+                /*
+                 * Caso o componente já tenha sido removido
+                 * pelo navegador, apenas mostramos um aviso.
+                 */
+                console.warn(
+                    "Não foi possível desmontar o Brick anterior:",
+                    erro
+                );
+            }
+
+            walletBrickController = null;
+        }
+
+        /*
+         * Limpa completamente a div que recebe
+         * o botão do Mercado Pago.
+         */
+        document
+            .getElementById("walletBrick_container")
+            .replaceChildren();
+    }
+
+    /*
+     * Método executado quando o usuário
+     * clica no botão "Criar pagamento".
+     */
+    async function criarPagamento() {
+
+        const reservaId =
+            document.getElementById("reservaId").value;
+
+        const mensagem =
+            document.getElementById("mensagem");
+
+        const botaoCriarPagamento =
+            document.getElementById("botaoCriarPagamento");
+
+        /*
+         * Verifica se foi informado um ID válido.
+         *
+         * Caso esteja vazio, seja zero ou negativo,
+         * interrompemos o método.
+         */
+        if (!reservaId || Number(reservaId) <= 0) {
+
+            mensagem.textContent =
+                "Informe um ID de reserva válido.";
+
+            return;
+        }
+
+        /*
+         * Verifica se o arquivo do SDK do Mercado Pago
+         * foi carregado corretamente pelo navegador.
+         */
+        if (typeof MercadoPago === "undefined") {
+
+            mensagem.textContent =
+                "O SDK do Mercado Pago não foi carregado.";
+
+            console.error(
+                "MercadoPago não está definido. Verifique o carregamento do SDK."
+            );
+
+            return;
+        }
+
+        try {
+            /*
+             * Impede que o usuário clique várias vezes
+             * enquanto o pagamento está sendo criado.
+             */
+            botaoCriarPagamento.disabled = true;
+
+            mensagem.textContent =
+                "Criando o pagamento...";
+
+            /*
+             * Remove um Wallet Brick antigo,
+             * caso já exista na página.
+             */
+            await removerBrickAnterior();
+
+            /*
+             * Busca no backend a Public Key
+             * configurada para o frontend.
+             */
+            const configResponse = await fetch(
+                "/api/config/mercadopago"
+            );
+
+            /*
+             * Caso o endpoint não responda com sucesso,
+             * interrompemos a criação do pagamento.
+             */
+            if (!configResponse.ok) {
+
+                const detalhes =
+                    await configResponse.text();
+
+                throw new Error(
+                    "Não foi possível buscar a Public Key. "
+                    + detalhes
+                );
+            }
+
+            const config =
+                await configResponse.json();
+
+            /*
+             * Verifica se o backend realmente
+             * devolveu a Public Key.
+             */
+            if (!config.publicKey) {
+
+                throw new Error(
+                    "A Public Key não foi retornada pelo backend."
+                );
+            }
+
+            /*
+             * Chama o backend para criar uma preferência
+             * de pagamento para a reserva informada.
+             */
+            const checkoutResponse = await fetch(
+                `/api/pagamentos/${reservaId}/checkout`,
+                {
+                    method: "POST"
+                }
+            );
+
+            /*
+             * Caso o Spring devolva um erro,
+             * lemos o conteúdo para facilitar o diagnóstico.
+             */
+            if (!checkoutResponse.ok) {
+
+                const detalhes =
+                    await checkoutResponse.text();
+
+                throw new Error(
+                    "Erro ao criar preferência: "
+                    + detalhes
+                );
+            }
+
+            const checkout =
+                await checkoutResponse.json();
+
+            /*
+             * Verifica se o Mercado Pago criou
+             * e devolveu o preferenceId.
+             */
+            if (!checkout.preferenceId) {
+
+                throw new Error(
+                    "O preferenceId não foi retornado."
+                );
+            }
+
+            console.log(
+                "Preference ID criado:",
+                checkout.preferenceId
+            );
+
+            /*
+             * Inicializa o SDK com a Public Key.
+             */
+            const mercadoPago =
+                new MercadoPago(
+                    config.publicKey,
+                    {
+                        locale: "pt-BR"
+                    }
+                );
+
+            /*
+             * Cria o construtor dos componentes Bricks.
+             */
+            const bricksBuilder =
+                mercadoPago.bricks();
+
+            mensagem.textContent =
+                "Carregando o botão do Mercado Pago...";
+
+            /*
+             * Cria o Wallet Brick.
+             */
+            walletBrickController =
+                await bricksBuilder.create(
+                    "wallet",
+                    "walletBrick_container",
+                    {
+                        initialization: {
+
+                            /*
+                             * Identificador da preferência
+                             * criada pelo backend.
+                             */
+                            preferenceId:
+                            checkout.preferenceId
+                        },
+
+                        callbacks: {
+
+                            /*
+                             * Executado somente quando
+                             * o botão terminar de carregar.
+                             */
+                            onReady: () => {
+
+                                console.log(
+                                    "Wallet Brick carregado com sucesso."
+                                );
+
+                                mensagem.textContent =
+                                    "Botão carregado. Clique abaixo para pagar.";
+                            },
+
+                            /*
+                             * Executado quando o Mercado Pago
+                             * encontra algum erro no componente.
+                             */
+                            onError: (erro) => {
+
+                                console.error(
+                                    "Erro no Wallet Brick:",
+                                    erro
+                                );
+
+                                mensagem.textContent =
+                                    "O Mercado Pago não conseguiu carregar o botão. Veja o console do navegador.";
+                            }
+                        }
+                    }
+                );
+
+            /*
+             * Captura erros do fetch, do backend,
+             * da preferência ou do Wallet Brick.
+             */
+        } catch (erro) {
+
+            console.error(
+                "Erro ao carregar pagamento:",
+                erro
+            );
+
+            mensagem.textContent =
+                "Erro: " + erro.message;
+
+        } finally {
+
+            /*
+             * Libera novamente o botão,
+             * independentemente de sucesso ou erro.
+             */
+            botaoCriarPagamento.disabled = false;
+        }
+    }
+
+    /*
+     * Remove o Wallet Brick quando a página
+     * for fechada ou recarregada.
+     */
+    window.addEventListener(
+        "beforeunload",
+        () => {
+
+            if (walletBrickController) {
+
+                walletBrickController.unmount();
+
+                walletBrickController = null;
+            }
+        }
+    );
+</script>
+
+</body>
+
+</html>
