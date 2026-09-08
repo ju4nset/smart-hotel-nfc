@@ -1,5 +1,6 @@
 package com.juan.smart_hotel_nfc.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,18 +11,23 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
+   @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // Desliga a proteção contra ataques CSRF (necessário para o Postman conseguir fazer POST)
-                .csrf(csrf -> csrf.disable())
+       http
+               // Desliga o CSRF para testar via Postman (apenas em dev)
+               .csrf(csrf -> csrf.disable()) //Autorização
+               .authorizeHttpRequests(auth -> auth
 
-                // Libera o acesso para qualquer requisição que comece com /api/
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/asaas/clientes**","/pagamento-teste.html").permitAll()
-                        .anyRequest().authenticated()
-                );
+                         // Libera todas as rodas do Asaas )
+                       .requestMatchers("/api/asaas/**", "/pagamento-teste.html","/error").permitAll()
+                       .anyRequest().authenticated()
+               )
 
-        return http.build();
+               // Opcional: retorna 401 (UNAUTHORIZED) em vez de 403 quando não autenticado
+               .exceptionHandling(e -> e.authenticationEntryPoint
+                       ((request, response, authException)
+                               -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)));
+       return http.build();
+
     }
 }
