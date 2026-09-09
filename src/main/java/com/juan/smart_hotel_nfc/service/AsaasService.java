@@ -64,8 +64,8 @@ public class AsaasService {
                     response.statusCode() >= 300) {
 
                 throw new RuntimeException(
-                        "Erro ao criar cliente no Asaas: "
-                                + response.body()
+                        "Erro ao criar cliente no Asaas: " + response.statusCode() +
+                                 response.body()
                 );
             }
 
