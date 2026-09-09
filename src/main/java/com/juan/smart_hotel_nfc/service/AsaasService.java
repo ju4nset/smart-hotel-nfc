@@ -21,7 +21,9 @@ import static org.apache.hc.core5.http.message.MessageSupport.header;
 public class AsaasService {
 
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -60,12 +62,12 @@ public class AsaasService {
 
 
             // verifica se deu erro
-            if (response.statusCode() < 200 ||
-                    response.statusCode() >= 300) {
-
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                String location = response.headers().firstValue("location").orElse("sem-location");
                 throw new RuntimeException(
                         "Erro ao criar cliente no Asaas: " + response.statusCode() +
-                                 response.body()
+                                " | location=" + location +
+                                " | body=" + response.body()
                 );
             }
 
