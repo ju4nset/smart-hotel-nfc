@@ -47,8 +47,9 @@ public class AsaasService {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl + "/customers"))
                     .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiToken)
                     .header("Accept", "application/json")
+                    .header("User-Agent", "smart-hotel-nfc/1.0")
+                    .header("access_token", apiToken)
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
