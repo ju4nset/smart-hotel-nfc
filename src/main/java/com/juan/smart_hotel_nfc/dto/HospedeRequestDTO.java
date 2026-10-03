@@ -2,6 +2,7 @@ package com.juan.smart_hotel_nfc.dto;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,16 @@ public class HospedeRequestDTO {
 
 
 
+    @NotBlank(message = "Nome é obrigatório")
     private String nome;
+
+    @NotNull(message = "Número de telefone é obrigatório")
+    private String telefone;
+
     @CPF(message = "CPF inválido")
     @NotBlank(message = "CPF obrigatório")
-
     private String cpf;
+
 
 
     // 1. CONSTRUTOR VAZIO (Obrigatório para os frameworks)
