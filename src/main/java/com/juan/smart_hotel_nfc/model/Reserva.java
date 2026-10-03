@@ -24,7 +24,7 @@ public class Reserva {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusPagamento status;
+    private StatusPagamento statusPagamento = StatusPagamento.PENDENTE;
 
     @Column(nullable = false)
     private BigDecimal valorTotal;
@@ -39,8 +39,5 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "hospede_id", nullable = false)
     private Hospede hospede;
-
-
-
 
 }

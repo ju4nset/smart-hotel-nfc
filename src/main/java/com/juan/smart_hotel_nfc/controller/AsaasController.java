@@ -1,20 +1,26 @@
 package com.juan.smart_hotel_nfc.controller;
 
+
 import com.juan.smart_hotel_nfc.dto.*;
 import com.juan.smart_hotel_nfc.service.AsaasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.juan.smart_hotel_nfc.dto.AsaasPixQrCodeResponseDTO;
+import com.juan.smart_hotel_nfc.service.ReservaService;
 
 @RestController
 @RequestMapping("/api/asaas")
 public class AsaasController {
 
     private final AsaasService asaasService;
+    private final ReservaService reservaService;
 
-    public AsaasController(AsaasService asaasService){
+    public AsaasController(AsaasService asaasService, ReservaService reservaService) {
         this.asaasService = asaasService;
+        this.reservaService = reservaService;
     }
+
+
 
     @PostMapping("/clientes")
     public AsaasClienteResponseDTO criarCliente(@RequestBody AsaasClienteRequestDTO cliente){
@@ -57,6 +63,9 @@ public class AsaasController {
         } else{
             System.out.println("Erro no webhook: payment é nulo");
         }
+
+        reservaService.atualizarPagamentoWebhook(webhook);
+
         return ResponseEntity.ok().build();
 
     }

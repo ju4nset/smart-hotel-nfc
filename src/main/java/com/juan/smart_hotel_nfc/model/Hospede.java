@@ -3,6 +3,8 @@ package com.juan.smart_hotel_nfc.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Table(name = "hospede")
 public class Hospede extends Pessoa {
 
-
+@NotBlank(message = "Obrigatório informar o telefone")
+@Column(nullable = false)
+private String telefone;
 
 
 

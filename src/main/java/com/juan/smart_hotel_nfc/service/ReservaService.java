@@ -8,6 +8,10 @@ import com.juan.smart_hotel_nfc.repository.QuartoRepository;
 import com.juan.smart_hotel_nfc.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.juan.smart_hotel_nfc.dto.AsaasWebhookDTO;
+import org.springframework.transaction.annotation.Transactional;
+
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -51,7 +55,7 @@ public class ReservaService {
         novaReserva.setValorTotal(reservaRequestDTO.getValorTotal());
         novaReserva.setDataEntrada(reservaRequestDTO.getDataEntrada());
         novaReserva.setDataSaida(reservaRequestDTO.getDataSaida());
-        novaReserva.setStatus(StatusPagamento.AGUARDANDO_PAGAMENTO);
+        novaReserva.setStatusPagamento(StatusPagamento.PENDENTE);
         novaReserva.setOrigemReserva(OrigemReserva.WHATSAPP);
 
         Reserva reservaSalva = reservaRepository.save(novaReserva);
@@ -63,6 +67,50 @@ public class ReservaService {
         List <Reserva> reservas = reservaRepository.findAll();
         return reservas.stream().map(this::converterParaDTO).collect(Collectors.toList());
     }
+
+    // AQUI COMEÇA DO ATUALIZAR WEBHOOK
+
+    @Transactional
+    public void atualizarPagamentoWebhook(AsaasWebhookDTO asaasWebhookDTO){
+
+        if(asaasWebhookDTO.getPayment() == null){
+            System.out.println("Webhook sem pagamento.");
+            return;
+        }
+        String externalReference = asaasWebhookDTO.getPayment().getExternalReference();
+
+        if(externalReference == null || externalReference.isBlank()){
+            System.out.println("Webhook sem externalReference.");
+            return;
+        }
+        Long reservaId;
+
+     try{
+         reservaId = Long.parseLong(externalReference);
+     }catch (NumberFormatException e){
+         System.out.println("ExternalReference inválido: " + externalReference);
+         return;
+     }
+        //Entra a busca da reserva
+        Reserva reserva = reservaRepository.findById(reservaId).orElseThrow(()->
+                new NoSuchElementException("Reserva não encontrada"));
+
+
+    String evento = asaasWebhookDTO.getEvent();
+
+    switch (evento){
+        case "PAYMENT_RECEIVED":
+            reserva.setStatusPagamento(StatusPagamento.PAGO);
+            break;
+    }
+    reservaRepository.save(reserva);
+
+
+    }
+
+
+
+
 
     private ReservaResponseDTO converterParaDTO(Reserva reserva) {
         return new ReservaResponseDTO(reserva);
@@ -86,7 +134,7 @@ public class ReservaService {
         //Significa que para cada reserva encontrada nesse quarto, faça uma verificação
         for(Reserva reserva : reservasDoQuarto){
             //Reserva Recusada não deve bloquear o quarto.
-            if(reserva.getStatus() == StatusPagamento.RECUSADO){
+            if(reserva.getStatusPagamento() == StatusPagamento.CANCELADO){
                 continue;
             }
             boolean datasSeCruzam = novaEntrada.isBefore(reserva.getDataSaida()) && novaSaida.isAfter(reserva.getDataEntrada());
@@ -95,6 +143,7 @@ public class ReservaService {
             }
         }
     }
+
 
 
 }
