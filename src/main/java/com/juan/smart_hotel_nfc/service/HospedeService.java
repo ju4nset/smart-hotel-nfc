@@ -27,6 +27,8 @@ public class HospedeService {
         Hospede hospedeNovo = new Hospede();
         hospedeNovo.setNome(hospedeRequest.getNome());
         hospedeNovo.setCpf(hospedeRequest.getCpf());
+        hospedeNovo.setTelefone(hospedeRequest.getTelefone());
+
 
         // 2 O REPOSITORY VAI SALVAR NO BANCO DE DADOS
         Hospede hospedeSalvo = hospedeRepository.save(hospedeNovo);

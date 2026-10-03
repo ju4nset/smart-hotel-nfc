@@ -20,6 +20,7 @@ public class HospedeRequestDTO {
     @NotBlank(message = "Nome é obrigatório")
     private String nome;
 
+    //NotNull aceita string vazia  e NotBlank não!
     @NotNull(message = "Número de telefone é obrigatório")
     private String telefone;
 
