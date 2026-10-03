@@ -254,7 +254,7 @@ public class PagamentoService {
         }
 
         // Uma reserva já paga não pode voltar para recusada ou pendente.
-        if (reserva.getStatus() == reserva.getStatusPagamento().PAGO &&
+        if (reserva.getStatusPagamento() == reserva.getStatusPagamento().PAGO &&
                 novoStatus != StatusPagamento.PAGO) {
 
             log.info(
