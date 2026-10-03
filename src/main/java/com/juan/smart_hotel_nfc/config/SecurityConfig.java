@@ -19,7 +19,8 @@ public class SecurityConfig {
                .authorizeHttpRequests(auth -> auth
 
                          // Libera todas as rodas do Asaas )
-                       .requestMatchers("/api/asaas/**", "/pagamento-teste.html","/error").permitAll()
+                       .requestMatchers("/api/asaas/**", "/pagamento-teste.html","/error","/api/reserva")
+                       .permitAll()
                        .anyRequest().authenticated()
                )
 
