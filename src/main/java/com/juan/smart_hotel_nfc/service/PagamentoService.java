@@ -235,7 +235,7 @@ public class PagamentoService {
                 "rejected".equalsIgnoreCase(statusMercadoPago) ||
                         "cancelled".equalsIgnoreCase(statusMercadoPago)
         ) {
-            novoStatus = StatusPagamento.RECUSADO;
+            novoStatus = StatusPagamento.FALHOU;
 
         } else if (
                 "pending".equalsIgnoreCase(statusMercadoPago) ||
@@ -243,7 +243,7 @@ public class PagamentoService {
                         "authorized".equalsIgnoreCase(statusMercadoPago)
         ) {
             novoStatus =
-                    StatusPagamento.AGUARDANDO_PAGAMENTO;
+                    StatusPagamento.PENDENTE;
 
         } else {
             log.info(
@@ -254,7 +254,7 @@ public class PagamentoService {
         }
 
         // Uma reserva já paga não pode voltar para recusada ou pendente.
-        if (reserva.getStatus() == StatusPagamento.PAGO &&
+        if (reserva.getStatus() == reserva.getStatusPagamento().PAGO &&
                 novoStatus != StatusPagamento.PAGO) {
 
             log.info(
@@ -265,7 +265,7 @@ public class PagamentoService {
         }
 
         // Evita salvar novamente quando o status não mudou.
-        if (reserva.getStatus() == novoStatus) {
+        if (reserva.getStatusPagamento() == novoStatus) {
             log.info(
                     "Reserva {} já possui o status {}",
                     reserva.getId(),
@@ -274,7 +274,7 @@ public class PagamentoService {
             return;
         }
 
-        reserva.setStatus(novoStatus);
+        reserva.setStatusPagamento(novoStatus);
         reservaRepository.save(reserva);
 
         log.info(

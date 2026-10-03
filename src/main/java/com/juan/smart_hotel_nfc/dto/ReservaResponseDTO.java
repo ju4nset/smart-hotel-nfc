@@ -25,7 +25,7 @@ public class ReservaResponseDTO {
         this.dataEntrada = reserva.getDataEntrada();
         this.valorTotal = reserva.getValorTotal();
         this.dataSaida = reserva.getDataSaida();
-        this.status = reserva.getStatus().name();
+        this.status = reserva.getStatusPagamento().name();
         this.nomeHospede = reserva.getHospede().getNome();
         this.quartoID = reserva.getHospede().getId();
 
