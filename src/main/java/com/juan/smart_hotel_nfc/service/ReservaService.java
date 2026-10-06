@@ -102,6 +102,14 @@ public class ReservaService {
         case "PAYMENT_RECEIVED":
             reserva.setStatusPagamento(StatusPagamento.PAGO);
             break;
+        case "PAYMENT_OVERDUE ":
+            reserva.setStatusPagamento(StatusPagamento.PENDENTE);
+            break;
+        case "PAYMENT_REFUNDED":
+            reserva.setStatusPagamento(StatusPagamento.ESTORNADO);
+            break;
+        case "PAYMENT-DELETED":
+            reserva.setStatusPagamento(StatusPagamento.CANCELADO);
     }
     reservaRepository.save(reserva);
 

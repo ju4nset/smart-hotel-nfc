@@ -18,6 +18,8 @@ public class AsaasCobrancaResponseDTO {
     private BigDecimal value;
     private String externalReference;
     private String dueDate;
+    private String invoiceUrl;
+
 
 
     // Link de pagamento seguro ( quando retornado )
