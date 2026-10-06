@@ -16,7 +16,7 @@ public class AsaasController {
     private final AsaasService asaasService;
     private final ReservaService reservaService;
 
-    @Value("${asaas.webhook,token}")
+    @Value("${asaas.webhook.token}")
     private String asaasWebohookToken;
 
     public AsaasController(AsaasService asaasService, ReservaService reservaService) {
