@@ -3,9 +3,11 @@ package com.juan.smart_hotel_nfc.controller;
 
 import com.juan.smart_hotel_nfc.dto.*;
 import com.juan.smart_hotel_nfc.service.AsaasService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.juan.smart_hotel_nfc.service.ReservaService;
+
 
 @RestController
 @RequestMapping("/api/asaas")
@@ -13,6 +15,9 @@ public class AsaasController {
 
     private final AsaasService asaasService;
     private final ReservaService reservaService;
+
+    @Value("${asaas.webhook,token}")
+    private String asaasWebohookToken;
 
     public AsaasController(AsaasService asaasService, ReservaService reservaService) {
         this.asaasService = asaasService;
@@ -55,7 +60,13 @@ public class AsaasController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<Void> receberWebhook(@RequestBody AsaasWebhookDTO webhook) {
+    public ResponseEntity<Void> receberWebhook(@RequestHeader(value = "asaas-acess-token,", required =false)String token,
+                                               @RequestBody AsaasWebhookDTO webhook) {
+
+        if(token == null || !token.equals(asaasWebohookToken)){
+            System.out.println("Webhook recusado: token inválido.");
+            return ResponseEntity.status(401).build();
+        }
 
         System.out.println("Evento ASAAS: " + webhook.getEvent());
 
