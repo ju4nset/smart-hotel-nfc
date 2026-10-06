@@ -113,6 +113,7 @@ public class ReservaService {
         case "PAYMENT-DELETED":
             reserva.setStatusPagamento(StatusPagamento.CANCELADO);
     }
+    System.out.println("Status antes de salvar:  "+ reserva.getStatusPagamento());
     reservaRepository.save(reserva);
 
 
