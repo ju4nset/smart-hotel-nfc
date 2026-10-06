@@ -102,6 +102,8 @@ public class ReservaService {
         case "PAYMENT_RECEIVED":
             reserva.setStatusPagamento(StatusPagamento.PAGO);
             break;
+        case "PAYMENT_CONFIRMED":
+            reserva.setStatusPagamento(StatusPagamento.PAGO);
         case "PAYMENT_OVERDUE ":
             reserva.setStatusPagamento(StatusPagamento.PENDENTE);
             break;
