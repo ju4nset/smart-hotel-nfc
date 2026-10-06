@@ -17,7 +17,7 @@ public class AsaasController {
     private final ReservaService reservaService;
 
     @Value("${asaas.webhook.token}")
-    private String asaasWebohookToken;
+    private String asaasWebhookToken;
 
     public AsaasController(AsaasService asaasService, ReservaService reservaService) {
         this.asaasService = asaasService;
@@ -60,10 +60,10 @@ public class AsaasController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<Void> receberWebhook(@RequestHeader(value = "asaas-acess-token,", required =false)String token,
+    public ResponseEntity<Void> receberWebhook(@RequestHeader(value = "asaas-access-token", required =false)String token,
                                                @RequestBody AsaasWebhookDTO webhook) {
 
-        if(token == null || !token.equals(asaasWebohookToken)){
+        if(token == null || !token.equals(asaasWebhookToken)){
             System.out.println("Webhook recusado: token inválido.");
             return ResponseEntity.status(401).build();
         }
