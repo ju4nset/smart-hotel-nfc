@@ -17,6 +17,7 @@ public class ReservaResponseDTO {
     private String nomeHospede;
     private String statusDaReserva;
     private Long quartoID;
+    private String asaasPaymentId;
 
     public ReservaResponseDTO() {}
 
@@ -28,6 +29,7 @@ public class ReservaResponseDTO {
         this.status = reserva.getStatusPagamento().name();
         this.nomeHospede = reserva.getHospede().getNome();
         this.quartoID = reserva.getHospede().getId();
+        this.asaasPaymentId = reserva.getAsaasPaymentId();
 
     }
 
