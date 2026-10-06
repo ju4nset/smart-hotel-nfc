@@ -32,6 +32,9 @@ public class Reserva {
     @Enumerated(EnumType.STRING)
     private OrigemReserva origemReserva;
 
+    @Column(name = "asaas_payment_id")
+    private String asaasPaymentId;
+
     @ManyToOne
     @JoinColumn(name = "quarto_id", nullable = false)
     private Quarto quarto;

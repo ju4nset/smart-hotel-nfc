@@ -5,7 +5,6 @@ import com.juan.smart_hotel_nfc.dto.*;
 import com.juan.smart_hotel_nfc.service.AsaasService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.juan.smart_hotel_nfc.dto.AsaasPixQrCodeResponseDTO;
 import com.juan.smart_hotel_nfc.service.ReservaService;
 
 @RestController
@@ -42,6 +41,9 @@ public class AsaasController {
             (@RequestBody AsaasCobrancaRequestDTO cobranca){
 
         AsaasCobrancaResponseDTO response = asaasService.criarCobranca(cobranca);
+
+        reservaService.vincularCobrancaAsaas(cobranca.getExternalReference(), response.getId());
+
         return ResponseEntity.ok(response);
     }
 

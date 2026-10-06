@@ -100,19 +100,20 @@ public class ReservaService {
 
     switch (evento){
         case "PAYMENT_RECEIVED":
-            reserva.setStatusPagamento(StatusPagamento.VENCIDO);
-            break;
         case "PAYMENT_CONFIRMED":
             reserva.setStatusPagamento(StatusPagamento.PAGO);
             break;
-        case "PAYMENT_OVERDUE ":
-            reserva.setStatusPagamento(StatusPagamento.PENDENTE);
+        case "PAYMENT_OVERDUE":
+            reserva.setStatusPagamento(StatusPagamento.VENCIDO);
             break;
         case "PAYMENT_REFUNDED":
             reserva.setStatusPagamento(StatusPagamento.ESTORNADO);
             break;
         case "PAYMENT_DELETED":
             reserva.setStatusPagamento(StatusPagamento.CANCELADO);
+        default:
+            System.out.println("Evento asaas não tratado: " + evento);
+            return;
     }
     System.out.println("Status antes de salvar:  "+ reserva.getStatusPagamento());
     reservaRepository.save(reserva);
@@ -120,6 +121,22 @@ public class ReservaService {
 
     }
 
+
+    public void vincularCobrancaAsaas(String externalReference, String paymentId){
+        Long reservaId;
+
+        try{
+            reservaId = Long.parseLong(externalReference);
+        }catch (NumberFormatException e){
+            throw new IllegalArgumentException("ExternalReference inválido: " + externalReference);
+        }
+
+        Reserva reserva = reservaRepository.findById(reservaId).orElseThrow(()->
+                new NoSuchElementException("Reserva não encontrada: " + reservaId));
+
+        reserva.setAsaasPaymentId(paymentId);
+        reservaRepository.save(reserva);
+    }
 
 
 
