@@ -14,7 +14,7 @@ public class AsaasWebhookEvento {
     private Long id;
 
     @Column(nullable = false, unique =true)
-    private String eventoId;
+    private String eventId;
 
     private String eventType;
 
