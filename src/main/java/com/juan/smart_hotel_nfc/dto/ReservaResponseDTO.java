@@ -1,6 +1,7 @@
 package com.juan.smart_hotel_nfc.dto;
 
 import com.juan.smart_hotel_nfc.model.Reserva;
+import com.juan.smart_hotel_nfc.model.StatusReserva;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ public class ReservaResponseDTO {
     private BigDecimal valorTotal;
     private String status;
     private String nomeHospede;
-    private String statusDaReserva;
+    private StatusReserva statusDaReserva;
     private Long quartoID;
     private String asaasPaymentId;
 
@@ -30,6 +31,7 @@ public class ReservaResponseDTO {
         this.nomeHospede = reserva.getHospede().getNome();
         this.quartoID = reserva.getHospede().getId();
         this.asaasPaymentId = reserva.getAsaasPaymentId();
+        this.statusDaReserva = reserva.getStatusReserva();
 
     }
 

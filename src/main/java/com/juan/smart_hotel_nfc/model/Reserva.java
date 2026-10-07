@@ -43,4 +43,8 @@ public class Reserva {
     @JoinColumn(name = "hospede_id", nullable = false)
     private Hospede hospede;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_reserva", nullable = false)
+    private StatusReserva statusReserva = StatusReserva.PENDENTE;
+
 }

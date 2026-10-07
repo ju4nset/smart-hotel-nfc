@@ -61,6 +61,7 @@ public class ReservaService {
         novaReserva.setDataEntrada(reservaRequestDTO.getDataEntrada());
         novaReserva.setDataSaida(reservaRequestDTO.getDataSaida());
         novaReserva.setStatusPagamento(StatusPagamento.PENDENTE);
+        novaReserva.setStatusReserva(StatusReserva.PENDENTE);
         novaReserva.setOrigemReserva(OrigemReserva.WHATSAPP);
 
         Reserva reservaSalva = reservaRepository.save(novaReserva);
@@ -145,6 +146,9 @@ public class ReservaService {
         case "PAYMENT_RECEIVED":
         case "PAYMENT_CONFIRMED":
             reserva.setStatusPagamento(StatusPagamento.PAGO);
+            if(reserva.getStatusPagamento() == StatusPagamento.PAGO){
+                reserva.setStatusReserva(StatusReserva.CONFIRMADA);
+            }
             break;
         case "PAYMENT_OVERDUE":
             reserva.setStatusPagamento(StatusPagamento.VENCIDO);

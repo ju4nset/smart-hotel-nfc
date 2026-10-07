@@ -1,12 +1,11 @@
 package com.juan.smart_hotel_nfc.model;
 
 public enum StatusReserva {
-    AGUARDANDO_PAGAMENTO,
+    PENDENTE,
     CONFIRMADA,
-    CHECK_IN_REALIZADO,
-    CHECK_OUT_REALIZADO,
+    CHECK_IN,
+    CHECK_OUT,
     CANCELADA,
     NO_SHOW
-
 
 }
