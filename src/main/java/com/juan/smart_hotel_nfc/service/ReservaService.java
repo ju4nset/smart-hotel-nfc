@@ -161,7 +161,7 @@ public class ReservaService {
     reservaRepository.save(reserva);
 
     AsaasWebhookEvento eventoProcessado = new AsaasWebhookEvento();
-    eventoProcessado.setEventoId(asaasWebhookDTO.getId());
+    eventoProcessado.setEventId(asaasWebhookDTO.getId());
     eventoProcessado.setEventType(asaasWebhookDTO.getEvent());
     eventoProcessado.setPaymentId(asaasWebhookDTO.getPayment().getId());
     eventoProcessado.setProcessadoEm(LocalDateTime.now());
