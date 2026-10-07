@@ -47,6 +47,11 @@ public class AsaasController {
 
         AsaasCobrancaResponseDTO response = asaasService.criarCobranca(cobranca);
 
+
+        //1 VERIFICA SE HÁ ALGUMA COBRANÇA COM O MESMO EXTERNAL REFERENCE
+        reservaService.validarReservaParaCobranca(cobranca.getExternalReference());
+
+        // 2 VINCULANDO A RESERVA AO PAGAMENTO
         reservaService.vincularCobrancaAsaas(cobranca.getExternalReference(), response.getId());
 
         return ResponseEntity.ok(response);

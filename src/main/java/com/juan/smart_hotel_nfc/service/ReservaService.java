@@ -3,6 +3,7 @@ package com.juan.smart_hotel_nfc.service;
 import com.juan.smart_hotel_nfc.dto.ReservaRequestDTO;
 import com.juan.smart_hotel_nfc.dto.ReservaResponseDTO;
 import com.juan.smart_hotel_nfc.model.*;
+import com.juan.smart_hotel_nfc.repository.AsaasWebhookEventoRepository;
 import com.juan.smart_hotel_nfc.repository.HospedeRepository;
 import com.juan.smart_hotel_nfc.repository.QuartoRepository;
 import com.juan.smart_hotel_nfc.repository.ReservaRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -29,6 +31,9 @@ public class ReservaService {
 
     @Autowired
     private QuartoRepository quartoRepository;
+
+    @Autowired
+    private AsaasWebhookEventoRepository asaasWebhookEventoRepository;
 
 
     public ReservaResponseDTO cadastraReserva(ReservaRequestDTO reservaRequestDTO) {
@@ -68,8 +73,24 @@ public class ReservaService {
         return reservas.stream().map(this::converterParaDTO).collect(Collectors.toList());
     }
 
-    // AQUI COMEÇA DO ATUALIZAR WEBHOOK
+    public void validarReservaParaCobranca(String externalReference){
+        Long reservaId;
+        try{
+            reservaId =Long.parseLong(externalReference);
+        }catch (NumberFormatException e){
+            throw new IllegalArgumentException("External Reference inválido: " + externalReference);
+        }
+        Reserva reserva = reservaRepository.findById(reservaId).orElseThrow(()->
+                new NoSuchElementException("Reserva não encontrada: " + reservaId));
+        if(reserva.getStatusPagamento() == StatusPagamento.PAGO){
+            throw new IllegalArgumentException("Reserva já está paga");
+        }
+        if(reserva.getAsaasPaymentId() != null && !reserva.getAsaasPaymentId().isEmpty()){
+            throw new IllegalArgumentException("Essa reserva já possui uma cobrança válida.");
+        }
+    }
 
+    // AQUI COMEÇA DO ATUALIZAR WEBHOOK
     @Transactional
     public void atualizarPagamentoWebhook(AsaasWebhookDTO asaasWebhookDTO){
 
@@ -77,6 +98,18 @@ public class ReservaService {
             System.out.println("Webhook sem pagamento.");
             return;
         }
+
+        String eventId =asaasWebhookDTO.getId();
+
+        if(eventId == null || eventId.isBlank()){
+            System.out.println("Webhook sem evento ID");
+            return;
+        }
+
+        if(asaasWebhookEventoRepository.existsByEventId(eventId)){
+            System.out.println("Webhook já processado: " + eventId );
+        }
+
         String externalReference = asaasWebhookDTO.getPayment().getExternalReference();
 
         if(externalReference == null || externalReference.isBlank()){
@@ -94,6 +127,15 @@ public class ReservaService {
         //Entra a busca da reserva
         Reserva reserva = reservaRepository.findById(reservaId).orElseThrow(()->
                 new NoSuchElementException("Reserva não encontrada"));
+
+
+     String paymentIdRecebido = asaasWebhookDTO.getPayment().getId();
+
+     if(reserva.getAsaasPaymentId() == null || !reserva.getAsaasPaymentId().equals(paymentIdRecebido)){
+         System.out.println("Payment do webhook não corresponde a cobrança da reserva");
+
+         return;
+     }
 
 
     String evento = asaasWebhookDTO.getEvent();
@@ -118,7 +160,12 @@ public class ReservaService {
     System.out.println("Status antes de salvar:  "+ reserva.getStatusPagamento());
     reservaRepository.save(reserva);
 
-
+    AsaasWebhookEvento eventoProcessado = new AsaasWebhookEvento();
+    eventoProcessado.setEventoId(asaasWebhookDTO.getId());
+    eventoProcessado.setEventType(asaasWebhookDTO.getEvent());
+    eventoProcessado.setPaymentId(asaasWebhookDTO.getPayment().getId());
+    eventoProcessado.setProcessadoEm(LocalDateTime.now());
+    asaasWebhookEventoRepository.save(eventoProcessado);
     }
 
 
