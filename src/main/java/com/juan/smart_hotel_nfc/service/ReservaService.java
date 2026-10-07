@@ -108,6 +108,7 @@ public class ReservaService {
 
         if(asaasWebhookEventoRepository.existsByEventId(eventId)){
             System.out.println("Webhook já processado: " + eventId );
+            return;
         }
 
         String externalReference = asaasWebhookDTO.getPayment().getExternalReference();
