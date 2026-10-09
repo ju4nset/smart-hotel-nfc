@@ -45,13 +45,13 @@ public class AsaasController {
     public ResponseEntity<AsaasCobrancaResponseDTO> criarCobranca
             (@RequestBody AsaasCobrancaRequestDTO cobranca){
 
-        AsaasCobrancaResponseDTO response = asaasService.criarCobranca(cobranca);
-
-
         //1 VERIFICA SE HÁ ALGUMA COBRANÇA COM O MESMO EXTERNAL REFERENCE
         reservaService.validarReservaParaCobranca(cobranca.getExternalReference());
 
-        // 2 VINCULANDO A RESERVA AO PAGAMENTO
+        // 2 CRIANDO COBRANCA
+        AsaasCobrancaResponseDTO response = asaasService.criarCobranca(cobranca);
+
+        // 3 VINCULANDO A RESERVA AO PAGAMENTO
         reservaService.vincularCobrancaAsaas(cobranca.getExternalReference(), response.getId());
 
         return ResponseEntity.ok(response);

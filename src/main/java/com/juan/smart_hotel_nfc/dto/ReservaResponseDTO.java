@@ -29,7 +29,7 @@ public class ReservaResponseDTO {
         this.dataSaida = reserva.getDataSaida();
         this.status = reserva.getStatusPagamento().name();
         this.nomeHospede = reserva.getHospede().getNome();
-        this.quartoID = reserva.getHospede().getId();
+        this.quartoID = reserva.getQuarto().getId();
         this.asaasPaymentId = reserva.getAsaasPaymentId();
         this.statusDaReserva = reserva.getStatusReserva();
 

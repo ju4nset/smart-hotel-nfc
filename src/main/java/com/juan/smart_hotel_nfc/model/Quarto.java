@@ -17,18 +17,14 @@ public class Quarto {
     private String numero;
 
     // IMPOSSIVEL O SISTEMA CRIAR UM QUARTO SEM CATEGORIA
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private QuartoCategoria categoria;
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private CategoriaQuarto categoria;
 
     //IMPOSSÍVEL O QUARTO SER CRIADO SEM UM STATUS
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusQuarto statusQuarto;
 
-    //UMA TRAVA QUE É IMPOSSÍVEL TER UM QUARTO OCUPADO SEM HOSPEDE
-    @ManyToOne
-    @JoinColumn(name = "hospede_id", nullable = true)
-    private Hospede hospede;
 
 }

@@ -2,8 +2,8 @@ package com.juan.smart_hotel_nfc.model;
 
 public enum StatusQuarto {
 
+    ATIVO,
     LIMPEZA,
-    OCUPADO,
-    LIVRE,
-    MANUTENCAO
+    MANUTENCAO,
+    INATIVO
 }

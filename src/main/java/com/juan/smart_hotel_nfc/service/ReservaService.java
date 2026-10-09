@@ -158,6 +158,7 @@ public class ReservaService {
             break;
         case "PAYMENT_DELETED":
             reserva.setStatusPagamento(StatusPagamento.CANCELADO);
+            break;
         default:
             System.out.println("Evento asaas não tratado: " + evento);
             return;

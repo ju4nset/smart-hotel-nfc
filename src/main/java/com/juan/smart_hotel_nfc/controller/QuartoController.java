@@ -22,7 +22,7 @@ public class QuartoController {
     // ENDPOINT para listar todos os quartos
     @GetMapping
     public ResponseEntity <List<QuartoResponseDTO>> ListarQuartos() {
-        List <QuartoResponseDTO> quartos = quartoService.ListarTodosOsQuartos();
+        List <QuartoResponseDTO> quartos = quartoService.listarTodosOsQuartos();
         return ResponseEntity.ok(quartos); //Retorna o status ok com a lista de quartos
 
     }
