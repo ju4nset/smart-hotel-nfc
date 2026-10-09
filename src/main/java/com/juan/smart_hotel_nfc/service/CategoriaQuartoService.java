@@ -19,6 +19,11 @@ public class CategoriaQuartoService {
 
     public CategoriaQuartoResponseDTO criarCategoria(CategoriaQuartoRequestDTO request) {
 
+        if(categoriaQuartoRepository.findByNome(request.nome()).isPresent()){
+            throw new IllegalArgumentException("Ja existe uma categoria com esse nome");
+
+        }
+
         CategoriaQuarto categoria = new CategoriaQuarto();
         categoria.setNome(request.nome());
         categoria.setCapacidadeMaxima(request.capacidadeMaxima());
