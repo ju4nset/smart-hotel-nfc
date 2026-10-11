@@ -28,7 +28,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     long contarReservasConflitantes(
             @Param("quartoId") Long quartoId,
             @Param("entrada") LocalDate entrada,
-            @Param("sauda") LocalDate saida,
+            @Param("saida") LocalDate saida,
             @Param("statusIgnorado") List<StatusReserva> statusIgnorado
     );
 
