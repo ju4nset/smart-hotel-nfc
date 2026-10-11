@@ -49,7 +49,7 @@ public class QuartoController {
 
         List <QuartoResponseDTO> quartosDisponiveis = quartoService.buscarQuartosDisponiveis(entrada, saida, hospedes
         );
-        
+
           return ResponseEntity.ok(quartosDisponiveis);
     }
 
