@@ -20,7 +20,7 @@ public class SecurityConfig {
 
                          // Libera todas as rodas do Asaas )
                        .requestMatchers("/api/asaas/**", "/pagamento-teste.html","/error","/api/reserva","" +
-                               "/api/hospede","/api/quartos","/api/categorias/disponiveis")
+                               "/api/hospede","/api/quartos/disponiveis","/api/categorias")
                        .permitAll()
                        .anyRequest().authenticated()
                )
