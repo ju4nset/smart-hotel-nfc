@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ReservaConflitanteException.class)
     public ResponseEntity<Map<String, Object>> tratarReservaConflitante(ReservaConflitanteException ex){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("status", 400, "message", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("status", HttpStatus.CONFLICT.value(), "message", ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of(
-                        "status", 400,
-                        "mensagem", ex.getMessage()
+                        "status", HttpStatus.BAD_REQUEST.value(),
+                        "mensage", ex.getMessage()
                 ));
     }
 
@@ -35,8 +35,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(Map.of(
-                        "status", 404,
-                        "mensagem", ex.getMessage()
+                        "status", HttpStatus.NOT_FOUND.value(),
+                        "mensage", ex.getMessage()
                 ));
     }
 
