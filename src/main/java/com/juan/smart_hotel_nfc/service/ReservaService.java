@@ -2,6 +2,7 @@ package com.juan.smart_hotel_nfc.service;
 
 import com.juan.smart_hotel_nfc.dto.ReservaRequestDTO;
 import com.juan.smart_hotel_nfc.dto.ReservaResponseDTO;
+import com.juan.smart_hotel_nfc.exception.ReservaConflitanteException;
 import com.juan.smart_hotel_nfc.model.*;
 import com.juan.smart_hotel_nfc.repository.AsaasWebhookEventoRepository;
 import com.juan.smart_hotel_nfc.repository.HospedeRepository;
@@ -248,7 +249,7 @@ public class ReservaService {
         long conflitos = reservaRepository.contarReservasConflitantes(quartoId, novaEntrada, novaSaida, statusIgnorado);
 
         if(conflitos > 0){
-            throw new IllegalArgumentException("O quarto possui uma reserva para esse dia.");
+            throw new ReservaConflitanteException("O quarto possui uma reserva para esse dia.");
         }
     }
 
