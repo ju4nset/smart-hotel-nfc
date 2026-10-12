@@ -36,6 +36,7 @@ public class ReservaService {
     private AsaasWebhookEventoRepository asaasWebhookEventoRepository;
 
 
+    @Transactional
     public ReservaResponseDTO cadastraReserva(ReservaRequestDTO reservaRequestDTO) {
 
         //Passando o validar Datas
@@ -44,10 +45,14 @@ public class ReservaService {
                     NoSuchElementException("Hospede não encontrado"));
 
 
-            Quarto quarto = quartoRepository.findById(reservaRequestDTO.getQuartoId()).orElseThrow(() -> new
+            Quarto quarto = quartoRepository.buscarQuartoParaReserva(reservaRequestDTO.getQuartoId()).orElseThrow(() -> new
                     NoSuchElementException("Quarto não encontrado"));
 
+            validarStatusQuarto(quarto);
 
+
+            //Verificar a quantidade de pessoas
+         validarCapacidade(quarto, reservaRequestDTO.getQuantidadeAdultos(), reservaRequestDTO.getQuantidadeCriancas());
 
         // Verifica se o quarto está livre nesse período
         verificarDisponibilidade(quarto.getId(), reservaRequestDTO.getDataEntrada(), reservaRequestDTO.getDataSaida());
@@ -63,10 +68,37 @@ public class ReservaService {
         novaReserva.setStatusPagamento(StatusPagamento.PENDENTE);
         novaReserva.setStatusReserva(StatusReserva.PENDENTE);
         novaReserva.setOrigemReserva(OrigemReserva.WHATSAPP);
+        novaReserva.setQuantidadeAdultos(reservaRequestDTO.getQuantidadeAdultos());
+        novaReserva.setQuantidadeCriancas(reservaRequestDTO.getQuantidadeCriancas());
 
         Reserva reservaSalva = reservaRepository.save(novaReserva);
 
         return new ReservaResponseDTO(reservaSalva);
+    }
+
+    private void validarStatusQuarto(Quarto quarto) {
+
+        if (quarto.getStatusQuarto() != StatusQuarto.ATIVO) {
+            throw new IllegalStateException("O quarto não esta disponível para reservas. ");
+        }
+    }
+
+    private void validarCapacidade(Quarto quarto, Integer adultos, Integer criancas){
+
+        if(adultos == null || criancas == null){
+            throw  new IllegalArgumentException("Quantidade de pessoas inválida.");
+        }
+        if(adultos <1 || criancas <0){
+            throw new IllegalArgumentException("Quantidade inválida.");
+        }
+
+        int capacidadeMaxima = quarto.getCategoria().getCapacidadeMaxima();
+        int totalHospede = adultos + criancas;
+
+        if(totalHospede > capacidadeMaxima){
+            throw new IllegalArgumentException("A quantidade de hóspedes ultrapassa a capacidade máxima do quarto.");
+        }
+
     }
 
     public List<ReservaResponseDTO> ListarTodasAsReservas() {
@@ -211,18 +243,12 @@ public class ReservaService {
     }
 
     private void verificarDisponibilidade(Long quartoId, LocalDate novaEntrada, LocalDate novaSaida){
-        List<Reserva> reservasDoQuarto = reservaRepository.findByQuarto_Id(quartoId);
+        List<StatusReserva> statusIgnorado = List.of(StatusReserva.CANCELADA, StatusReserva.NO_SHOW);
 
-        //Significa que para cada reserva encontrada nesse quarto, faça uma verificação
-        for(Reserva reserva : reservasDoQuarto){
-            //Reserva Recusada não deve bloquear o quarto.
-            if(reserva.getStatusPagamento() == StatusPagamento.CANCELADO){
-                continue;
-            }
-            boolean datasSeCruzam = novaEntrada.isBefore(reserva.getDataSaida()) && novaSaida.isAfter(reserva.getDataEntrada());
-            if(datasSeCruzam){
-                throw new IllegalArgumentException("O quarto já possui uma reserva nesse período");
-            }
+        long conflitos = reservaRepository.contarReservasConflitantes(quartoId, novaEntrada, novaSaida, statusIgnorado);
+
+        if(conflitos > 0){
+            throw new IllegalArgumentException("O quarto possui uma reserva para esse dia.");
         }
     }
 

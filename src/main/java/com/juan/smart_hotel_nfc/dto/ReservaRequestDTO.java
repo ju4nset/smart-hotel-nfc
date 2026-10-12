@@ -14,6 +14,8 @@ public class ReservaRequestDTO {
     private BigDecimal valorTotal;
     private Long hospedeId;
     private Long quartoId;
+    private Integer quantidadeAdultos;
+    private Integer quantidadeCriancas;
 
 
     //   FAZENDO UMA RESERVA VIA POSTMAN
