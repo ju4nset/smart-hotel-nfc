@@ -9,6 +9,7 @@ public record CategoriaQuartoResponseDTO(Long id,
                                           int capacidadeAdultos,
                                           int capacidadeCriancas,
                                           BigDecimal valorBase,
-                                          String descricao) {
+                                          String descricao,
+                                          BigDecimal adicionalHospede) {
 
 }

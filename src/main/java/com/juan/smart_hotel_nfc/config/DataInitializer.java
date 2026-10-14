@@ -1,3 +1,4 @@
+
 package com.juan.smart_hotel_nfc.config;
 
 import com.juan.smart_hotel_nfc.model.CategoriaQuarto;
@@ -9,31 +10,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class DataInitializer implements CommandLineRunner {
 
-    /*
-     * IMPORTANTE:
-     * Agora precisamos de DOIS repositories.
-     *
-     * QuartoRepository:
-     * usado para salvar/buscar quartos.
-     *
-     * CategoriaQuartoRepository:
-     * usado para salvar/buscar categorias.
-     */
     private final QuartoRepository quartoRepository;
     private final CategoriaQuartoRepository categoriaQuartoRepository;
 
-
-    /*
-     * INJEÇÃO DE DEPENDÊNCIA
-     *
-     * O Spring automaticamente entrega os dois repositories
-     * para esta classe quando iniciar a aplicação.
-     */
+    // Injeção dos repositories utilizados na inicialização.
     public DataInitializer(
             QuartoRepository quartoRepository,
             CategoriaQuartoRepository categoriaQuartoRepository) {
@@ -42,189 +27,77 @@ public class DataInitializer implements CommandLineRunner {
         this.categoriaQuartoRepository = categoriaQuartoRepository;
     }
 
-
-    /*
-     * CommandLineRunner:
-     *
-     * Esse método é executado automaticamente quando
-     * o Spring Boot termina de iniciar.
-     *
-     * Ou seja:
-     *
-     * Spring inicia
-     *      ↓
-     * conecta no banco
-     *      ↓
-     * executa run()
-     *      ↓
-     * depois libera a aplicação
-     */
     @Override
-    public void run(String... args) throws Exception {
-
+    public void run(String... args) {
 
         /*
-         * =========================================================
-         * 1 - CRIAMOS OU BUSCAMOS AS CATEGORIAS
-         * =========================================================
-         *
-         * Antes nós usávamos:
-         *
-         * QuartoCategoria.CASAL_STANDARD
-         *
-         * que era um ENUM.
-         *
-         * Agora CategoriaQuarto é uma ENTIDADE DO BANCO.
-         *
-         * Por isso precisamos buscar ou criar cada categoria.
+          1 - CATEGORIAS E TARIFAS
+          Busca as categorias pelo nome.
+          Se não existirem, cria com as tarifas iniciais.
          */
-
 
         CategoriaQuarto casalStandard = buscarOuCriarCategoria(
                 "Casal Standard",
-                2,
-                2,
-                1,
-                new BigDecimal("250.00"),
+                2, 2, 1,
+                new BigDecimal("289.00"),
+                new BigDecimal("70.00"),
                 "Quarto casal standard"
         );
 
-
         CategoriaQuarto triplo = buscarOuCriarCategoria(
                 "Triplo",
-                3,
-                3,
-                2,
-                new BigDecimal("320.00"),
+                3, 3, 2,
+                new BigDecimal("289.00"),
+                new BigDecimal("70.00"),
                 "Quarto para até três hóspedes"
         );
 
-
         CategoriaQuarto quadruplo = buscarOuCriarCategoria(
                 "Quádruplo",
-                4,
-                4,
-                3,
-                new BigDecimal("400.00"),
+                4, 4, 3,
+                new BigDecimal("289.00"),
+                new BigDecimal("70.00"),
                 "Quarto para até quatro hóspedes"
         );
 
-
         CategoriaQuarto luxo = buscarOuCriarCategoria(
                 "Luxo",
-                2,
-                2,
-                1,
-                new BigDecimal("500.00"),
+                2, 2, 1,
+                new BigDecimal("349.00"),
+                new BigDecimal("110.00"),
                 "Quarto categoria luxo"
         );
 
-
         /*
-         * =========================================================
-         * 2 - CRIA OS QUARTOS
-         * =========================================================
-         *
-         * Só criamos os quartos automaticamente
-         * se a tabela de quartos estiver vazia.
-         *
-         * Isso evita criar:
-         *
-         * 101
-         * 101
-         * 101
-         *
-         * toda vez que o servidor reiniciar.
+         *2 - INICIALIZAÇÃO DOS QUARTOS
+          Só cria quartos se a tabela estiver vazia.
+          Não exclui nem duplica os quartos existentes.
          */
+
         if (quartoRepository.count() == 0) {
 
-
-            // 4 QUARTOS CASAL STANDARD
-
             Quarto q101 = criarQuarto("101", casalStandard);
-            Quarto q102 = criarQuarto("102", casalStandard);
-            Quarto q103 = criarQuarto("103", casalStandard);
-            Quarto q104 = criarQuarto("104", casalStandard);
-
-
-            // 2 QUARTOS TRIPLOS
-
             Quarto q201 = criarQuarto("201", triplo);
-            Quarto q202 = criarQuarto("202", triplo);
-
-
-            // 2 QUARTOS QUÁDRUPLOS
-
             Quarto q203 = criarQuarto("203", quadruplo);
-            Quarto q204 = criarQuarto("204", quadruplo);
-
-
-            // 2 QUARTOS LUXO
-
             Quarto q301 = criarQuarto("301", luxo);
-            Quarto q302 = criarQuarto("302", luxo);
 
-
-            /*
-             * saveAll() salva vários quartos de uma vez.
-             *
-             * Como aqui temos uma LISTA de quartos,
-             * usamos saveAll().
-             *
-             * Diferente do QuartoService, onde criamos
-             * apenas UM quarto e usamos save().
-             */
             quartoRepository.saveAll(
-                    Arrays.asList(
-                            q101,
-                            q102,
-                            q103,
-                            q104,
-                            q201,
-                            q202,
-                            q203,
-                            q204,
-                            q301,
-                            q302
-                    )
+                    List.of(q101, q201, q203, q301)
             );
-
 
             System.out.println(
-                    "Todos os 10 quartos foram inicializados com sucesso!"
+                    "4 quartos inicializados com sucesso!"
             );
         }
-
     }
 
-
     /*
-     * =========================================================
-     * MÉTODO AUXILIAR PARA CRIAR QUARTOS
-     * =========================================================
-     *
-     * Evita repetir:
-     *
-     * new Quarto()
-     * setNumero()
-     * setCategoria()
-     * setStatusQuarto()
-     *
-     * dez vezes.
-     *
-     *
-     * IMPORTANTE:
-     *
-     * Antes recebíamos:
-     *
-     * QuartoCategoria categoria
-     *
-     * Agora recebemos:
-     *
-     * CategoriaQuarto categoria
-     *
-     * porque categoria virou uma entidade do banco.
+     * 3 - CRIAÇÃO DE QUARTOS
+      Associa o quarto à categoria e define o status inicial.
+      ATIVO não significa disponível: a disponibilidade
+      depende das reservas e das datas.
      */
+
     private Quarto criarQuarto(
             String numero,
             CategoriaQuarto categoria) {
@@ -232,114 +105,66 @@ public class DataInitializer implements CommandLineRunner {
         Quarto quarto = new Quarto();
 
         quarto.setNumero(numero);
-
-        /*
-         * Aqui estamos criando a relação:
-         *
-         * Quarto -> CategoriaQuarto
-         *
-         * Por exemplo:
-         *
-         * Quarto 101
-         *     ↓
-         * Categoria Casal Standard
-         */
         quarto.setCategoria(categoria);
-
-
-        /*
-         * Todo quarto nasce como ATIVO.
-         *
-         * ATIVO significa:
-         * o quarto pode participar da operação normal do hotel.
-         *
-         * Isso NÃO significa necessariamente "livre".
-         *
-         * A disponibilidade será calculada pelas reservas
-         * e pelas datas.
-         */
         quarto.setStatusQuarto(StatusQuarto.ATIVO);
 
         return quarto;
     }
 
-
     /*
-     * =========================================================
-     * MÉTODO AUXILIAR PARA BUSCAR OU CRIAR CATEGORIA
-     * =========================================================
-     *
-     * Primeiro tentamos encontrar a categoria pelo nome.
-     *
-     * Exemplo:
-     *
-     * "Casal Standard"
-     *
-     * Se existir:
-     * usamos a categoria existente.
-     *
-     * Se NÃO existir:
-     * criamos uma nova categoria e salvamos.
-     *
-     *
-     * Isso evita duplicar categorias sempre que
-     * a aplicação reiniciar.
+     * 4 - BUSCAR OU CRIAR CATEGORIA
+     Se a categoria existir, preenche o adicional
+     somente quando estiver nulo.
+
+      Se não existir, cadastra todos os dados.
+
+      A tarifa-base de categorias existentes
+      NÃO é alterada automaticamente.
      */
+
     private CategoriaQuarto buscarOuCriarCategoria(
             String nome,
             int capacidadeMaxima,
             int capacidadeAdultos,
             int capacidadeCriancas,
             BigDecimal valorBase,
+            BigDecimal adicionalHospede,
             String descricao) {
-
 
         return categoriaQuartoRepository
                 .findByNome(nome)
 
-                /*
-                 * orElseGet:
-                 *
-                 * "Se não encontrou, execute este código".
-                 */
+                .map(categoria -> {
+
+                    if (categoria.getAdicionalHospede() == null) {
+
+                        categoria.setAdicionalHospede(
+                                adicionalHospede
+                        );
+
+                        return categoriaQuartoRepository.save(
+                                categoria
+                        );
+                    }
+
+                    return categoria;
+                })
+
                 .orElseGet(() -> {
 
-                    CategoriaQuarto categoria =
-                            new CategoriaQuarto();
-
+                    CategoriaQuarto categoria = new CategoriaQuarto();
 
                     categoria.setNome(nome);
+                    categoria.setCapacidadeMaxima(capacidadeMaxima);
+                    categoria.setCapacidadeAdultos(capacidadeAdultos);
+                    categoria.setCapacidadeCriancas(capacidadeCriancas);
+                    categoria.setValorBase(valorBase);
+                    categoria.setAdicionalHospede(adicionalHospede);
+                    categoria.setDescricao(descricao);
 
-                    categoria.setCapacidadeMaxima(
-                            capacidadeMaxima
+                    return categoriaQuartoRepository.save(
+                            categoria
                     );
-
-                    categoria.setCapacidadeAdultos(
-                            capacidadeAdultos
-                    );
-
-                    categoria.setCapacidadeCriancas(
-                            capacidadeCriancas
-                    );
-
-                    categoria.setValorBase(
-                            valorBase
-                    );
-
-                    categoria.setDescricao(
-                            descricao
-                    );
-
-
-                    /*
-                     * Salva a nova categoria no banco.
-                     *
-                     * Depois o próprio save() devolve
-                     * a categoria já com ID.
-                     */
-                    return categoriaQuartoRepository
-                            .save(categoria);
                 });
     }
-
 }

@@ -31,6 +31,7 @@ public class CategoriaQuartoService {
         categoria.setCapacidadeCriancas(request.capacidadeCriancas());
         categoria.setValorBase(request.valorBase());
         categoria.setDescricao(request.descricao());
+        categoria.setValorBase(request.valorBase());
 
         CategoriaQuarto categoriaSalva = categoriaQuartoRepository.save(categoria);
 
@@ -41,7 +42,8 @@ public class CategoriaQuartoService {
                 categoriaSalva.getCapacidadeAdultos(),
                 categoriaSalva.getCapacidadeCriancas(),
                 categoriaSalva.getValorBase(),
-                categoriaSalva.getDescricao()
+                categoriaSalva.getDescricao(),
+                categoriaSalva.getAdicionalHospede()
         );
     }
 
@@ -53,7 +55,8 @@ public class CategoriaQuartoService {
                 categoria.getCapacidadeAdultos(),
                 categoria.getCapacidadeCriancas(),
                 categoria.getValorBase(),
-                categoria.getDescricao()
+                categoria.getDescricao(),
+                categoria.getValorBase()
         )).toList();
 
     }

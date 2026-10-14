@@ -31,6 +31,10 @@ public class CategoriaQuarto {
    @Column(nullable = false, precision =10, scale = 2)
     private BigDecimal valorBase;
 
+   @Column(precision = 10, scale  = 2)
+   private BigDecimal adicionalHospede;
+
+
     private String descricao;
 
 
