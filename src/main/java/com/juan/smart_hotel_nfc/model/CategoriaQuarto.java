@@ -34,7 +34,6 @@ public class CategoriaQuarto {
    @Column(precision = 10, scale  = 2)
    private BigDecimal adicionalHospede;
 
-
     private String descricao;
 
 

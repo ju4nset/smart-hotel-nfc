@@ -56,7 +56,8 @@ public class CategoriaQuartoService {
                 categoria.getCapacidadeCriancas(),
                 categoria.getValorBase(),
                 categoria.getDescricao(),
-                categoria.getValorBase()
+                categoria.getAdicionalHospede()
+
         )).toList();
 
     }
