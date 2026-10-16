@@ -1,6 +1,6 @@
 package com.juan.smart_hotel_nfc.service;
 
-import com.juan.smart_hotel_nfc.dto.CheckOutResponse;
+import com.juan.smart_hotel_nfc.dto.CheckOutResponseDTO;
 import com.juan.smart_hotel_nfc.exception.PagamentoException;
 import com.juan.smart_hotel_nfc.exception.ReservaNaoEncontradaException;
 import com.juan.smart_hotel_nfc.model.Reserva;
@@ -46,7 +46,7 @@ public class PagamentoService {
     }
 
     // Busca a reserva, valida o valor e cria o checkout no Mercado Pago.
-    public CheckOutResponse criarCheckOut(Long reservaId) {
+    public CheckOutResponseDTO criarCheckOut(Long reservaId) {
         Reserva reserva = buscarReserva(reservaId);
         validarValor(reserva.getValorTotal());
 
@@ -359,7 +359,7 @@ public class PagamentoService {
     }
 
     // Envia a preferência e devolve o ID e a URL do checkout.
-    private CheckOutResponse enviarParaMercadoPago(
+    private CheckOutResponseDTO enviarParaMercadoPago(
             PreferenceRequest preferenceRequest,
             Long reservaId
     ) {
@@ -367,7 +367,7 @@ public class PagamentoService {
             Preference preference =
                     preferenceClient.create(preferenceRequest);
 
-            return new CheckOutResponse(
+            return new CheckOutResponseDTO(
                     preference.getId(),
                     preference.getInitPoint()
             );

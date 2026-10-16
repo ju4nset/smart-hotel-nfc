@@ -1,3 +1,4 @@
+
 package com.juan.smart_hotel_nfc.dto;
 
 import com.juan.smart_hotel_nfc.model.Reserva;
@@ -20,20 +21,22 @@ public class ReservaResponseDTO {
     private Long quartoID;
     private String asaasPaymentId;
 
-    public ReservaResponseDTO() {}
+    // Campos usados pelo checkout Asaas
+    private String invoiceUrl;
+    private String avisoCheckout;
 
-    public ReservaResponseDTO(Reserva reserva){
+    public ReservaResponseDTO() {
+    }
+
+    public ReservaResponseDTO(Reserva reserva) {
         this.id = reserva.getId();
         this.dataEntrada = reserva.getDataEntrada();
-        this.valorTotal = reserva.getValorTotal();
         this.dataSaida = reserva.getDataSaida();
+        this.valorTotal = reserva.getValorTotal();
         this.status = reserva.getStatusPagamento().name();
+        this.statusDaReserva = reserva.getStatusReserva();
         this.nomeHospede = reserva.getHospede().getNome();
         this.quartoID = reserva.getQuarto().getId();
         this.asaasPaymentId = reserva.getAsaasPaymentId();
-        this.statusDaReserva = reserva.getStatusReserva();
-
     }
-
-
 }

@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -17,14 +17,24 @@ public class SecurityConfig {
                // Desliga o CSRF para testar via Postman (apenas em dev)
                .csrf(csrf -> csrf.disable()) //Autorização
                .authorizeHttpRequests(auth -> auth
+                       .requestMatchers(
+                               HttpMethod.GET,
+                               "/api/categorias",
+                               "/api/quartos/disponiveis"
+                       ).permitAll()
 
-                         // Libera todas as rodas do Asaas )
-                       .requestMatchers("/api/asaas/**", "/pagamento-teste.html","/error","/api/reserva","" +
-                               "/api/hospede","/api/quartos/disponiveis","/api/categorias")
-                       .permitAll()
+                       .requestMatchers(
+                               HttpMethod.POST,
+                               "/api/hospede",
+                               "/api/reserva",
+                               "/api/asaas/webhook"
+                       ).permitAll()
+
+                       .requestMatchers("/error").permitAll()
+
                        .anyRequest().authenticated()
-               )
 
+)
                // Opcional: retorna 401 (UNAUTHORIZED) em vez de 403 quando não autenticado
                .exceptionHandling(e -> e.authenticationEntryPoint
                        ((request, response, authException)

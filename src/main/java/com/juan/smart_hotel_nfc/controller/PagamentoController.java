@@ -1,6 +1,6 @@
 package com.juan.smart_hotel_nfc.controller;
 
-import com.juan.smart_hotel_nfc.dto.CheckOutResponse;
+import com.juan.smart_hotel_nfc.dto.CheckOutResponseDTO;
 import com.juan.smart_hotel_nfc.service.PagamentoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +19,8 @@ public class    PagamentoController {
 
 
     @PostMapping("/{reservaId}/checkout")
-    public ResponseEntity<CheckOutResponse> criarCheckOut(@PathVariable Long reservaId){
-        CheckOutResponse response = pagamentoService.criarCheckOut(reservaId);
+    public ResponseEntity<CheckOutResponseDTO> criarCheckOut(@PathVariable Long reservaId){
+        CheckOutResponseDTO response = pagamentoService.criarCheckOut(reservaId);
         return ResponseEntity.ok(response);
     }
 
