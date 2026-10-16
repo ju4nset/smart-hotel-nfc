@@ -19,11 +19,11 @@ public class AsaasCobrancaRequestDTO {
     private String customer; //id do cliente no Asaas
 
     @NotBlank
-    private String billingType; //BOLETE, CREDIT_CARD, PIX, UNDEFINED
+    private String billingType; //BOLETO, CREDIT_CARD, PIX, UNDEFINED
 
     @NotNull
     private BigDecimal value;  //use BigDecimal para segurança, pois é um valor monetário
-
+    @NotNull
     @JsonProperty("dueDate")
     private LocalDate dueDate;
     private String description;

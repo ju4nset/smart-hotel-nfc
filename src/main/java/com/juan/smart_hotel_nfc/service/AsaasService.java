@@ -164,7 +164,53 @@ public class AsaasService {
             throw new RuntimeException("Erro ao criar cobrança no Asaas", e);
 
         }
+
     }
+
+
+    public AsaasCobrancaResponseDTO consultarCobranca(String paymentId) {
+
+        if (paymentId == null || paymentId.isBlank()) {
+            throw new IllegalArgumentException("ID da cobrança não informado.");
+        }
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl + "/payments/" + paymentId))
+                    .header("Accept", "application/json")
+                    .header("User-Agent", "smart-hotel-nfc/1.0")
+                    .header("access_token", apiToken)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() != 200) {
+                throw new IllegalStateException(
+                        "Falha ao consultar cobrança no Asaas. HTTP "
+                                + response.statusCode()
+                );
+            }
+
+            return objectMapper.readValue(
+                    response.body(),
+                    AsaasCobrancaResponseDTO.class
+            );
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Consulta interrompida.", e);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Não foi possível consultar a cobrança.",
+                    e
+            );
+        }
+    }
+
 
     public AsaasPixQrCodeResponseDTO buscarQrCodePix(String id) {
 

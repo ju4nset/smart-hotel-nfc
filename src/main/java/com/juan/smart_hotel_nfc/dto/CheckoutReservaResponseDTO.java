@@ -1,0 +1,11 @@
+package com.juan.smart_hotel_nfc.dto;
+
+public class CheckoutReservaResponseDTO {
+
+    public record CheckoutReservaResponseDTO(Long reservaId,
+                                             String paymentId,
+                                             String invoiceUrl){
+
+    }
+
+}
