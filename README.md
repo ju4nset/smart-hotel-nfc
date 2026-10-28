@@ -70,3 +70,8 @@ O projeto está há 10 meses em desenvolvimento, sem previsão de uma entrega fi
 O projeto ainda possui algumas funcionalidades a serem desenvolvidas, como a utilização de chaves digitais por NFC, integração com o Google Wallet, controle de consumo dos hóspedes e operações de check-in e check-out, que ainda precisam ser implementadas no backend.
 
 Mais adiante, será incluído um pequeno diagrama da arquitetura do projeto.
+
+## Pequena demostração do projeto
+O SMART HOTEL NFC, possui um site de reservas web, vinculado ao motor de reservas de Spring Boot, irei disponibilizar o LINK. Relembrando que toda a modelagem do site, foi realizado com IA.
+
+(https://aureahotelreservas10.vercel.app/)
