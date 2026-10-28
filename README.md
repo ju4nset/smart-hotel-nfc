@@ -72,6 +72,7 @@ O projeto ainda possui algumas funcionalidades a serem desenvolvidas, como a uti
 Mais adiante, será incluído um pequeno diagrama da arquitetura do projeto.
 
 ## Pequena demostração do projeto
-O SMART HOTEL NFC, possui um site de reservas web, vinculado ao motor de reservas de Spring Boot, irei disponibilizar o LINK. Relembrando que toda a modelagem do site, foi realizado com IA.
+O SMART HOTEL NFC, possui um site de reservas web, vinculado ao motor de reservas de Spring Boot, irei disponibilizar o LINK. Deixei logo a baixo também uma captura de tela do PMS (que está em desenvolvimento ainda).
+[Acessar o site de reservas](https://aureahotelreservas10.vercel.app/)
 
-(https://aureahotelreservas10.vercel.app/)
+![Interface do Áurea PMS](Captura%20de%20tela%20de%202026-10-28%2010-11-33.png)
